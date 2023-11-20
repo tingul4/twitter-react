@@ -1,10 +1,16 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import LogoIcon from './icons/logo-icon'
 import HomeIcon from './icons/home-icon'
 import UserIcon from './icons/user-icon'
 import SettingIcon from './icons/setting-icon'
-
+import AuthService from '../services/auth-service'
 const NavComponent = () => {
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    AuthService.logout()
+    navigate('/login')
+  }
   return (
     <div
       style={{
@@ -58,6 +64,31 @@ const NavComponent = () => {
           <SettingIcon />
           <span className="h5 ms-3">設定</span>
         </a>
+      </div>
+      <button
+        id="tweetBtn"
+        style={{
+          backgroundColor: "#FF6600",
+          color: "#FFFFFF",
+          borderRadius: 30,
+        }}
+        className="btn px-3"
+        data-bs-toggle="modal"
+        data-bs-target="#myModalmain"
+      >
+        推文
+      </button>
+      <div
+        style={{ height: 58 }}
+        className="d-flex align-items-center mx-2 mb-1 position-absolute bottom-0 start-0"
+      >
+        <button
+          style={{ color: "#171725" }}
+          className="navbar-brand text-decoration-none mx-2 px-1"
+          onClick={handleLogout}
+        >
+          <span className="h5 ms-3">登出</span>
+        </button>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 const { User, Tweet, Like, Reply, Followship } = require('../models')
 const bcrypt = require('bcryptjs')
-const helpers = require('../helpers/auth-helpers')
-const { imgurFileHandler } = require('../helpers/file-helpers')
+const helpers = require('../helpers/auth-helper')
+const { imgurFileHandler } = require('../helpers/file-helper')
 
 const userController = {
   getEditApi: async (req, res, next) => {

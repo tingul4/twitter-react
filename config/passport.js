@@ -1,39 +1,29 @@
 const passport = require('passport')
-const LocalStrategy = require('passport-local')
-const bcrypt = require('bcryptjs')
+const JwtStrategy = require('passport-jwt').Strategy
+const ExtractJwt = require('passport-jwt').ExtractJwt
 const { User } = require('../models')
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 // set up Passport strategy
-passport.use(new LocalStrategy(
-  // customize user field
-  {
-    usernameField: 'account',
-    passwordField: 'password',
-    passReqToCallback: true
-  },
-  // authenticate user
-  (req, account, password, cb) => {
-    User.findOne({ where: { account } })
-      .then(user => {
-        if (!user) return cb(null, false, req.flash('error_messages', '帳號不存在！'))
-        bcrypt.compare(password, user.password).then(res => {
-          if (!res) return cb(null, false, req.flash('error_messages', '密碼輸入錯誤！'))
-          return cb(null, user)
-        })
-      })
-  }
-))
-// serialize and deserialize user
-passport.serializeUser((user, cb) => {
-  cb(null, user.id)
-})
-passport.deserializeUser((id, cb) => {
-  return User.findByPk(id, {
-    include: [
-      { model: User, as: 'Followers' },
-      { model: User, as: 'Followings' }
-    ]
+
+const opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken()
+opts.secretOrKey = process.env.JWT_SECRET
+
+passport.use(
+  new JwtStrategy(opts, async function (jwtPayload, done) {
+    try {
+      const foundUser = await User.findByPk(jwtPayload.id) // 依照需求加入關聯
+      if (foundUser) {
+        return done(null, foundUser) // 之後 middleware 可使用 req.user 來獲取 foundUser
+      } else {
+        return done(null, false)
+      }
+    } catch (e) {
+      return done(e, false)
+    }
   })
-    .then(user => cb(null, user.toJSON()))
-    .catch(err => cb(err))
-})
+)
+
 module.exports = passport

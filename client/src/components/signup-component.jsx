@@ -1,9 +1,43 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import LogoIcon from "./icons/logo-icon"
+import AuthService from '../services/auth-service'
 
 const SignupComponent = () => {
+  const navigate = useNavigate();
+  const [account, setAccount] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [checkPassword, setCheckPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleChangeAccount = (e) => {
+    setAccount(e.target.value);
+  };
+  const handleChangeName = (e) => {
+    setName(e.target.value);
+  };
+  const handleChangeEmail = (e) => {
+    setEmail(e.target.value);
+  };
+  const handleChangePassword = (e) => {
+    setPassword(e.target.value);
+  };
+  const handleChangeCheckPassword = (e) => {
+    setCheckPassword(e.target.value);
+  };
+  const handleSignup = () => {
+    AuthService.signup(account, name, email, password, checkPassword)
+      .then(() => {
+        window.alert("註冊成功!您即將被導入登入頁面!");
+        navigate("/login");
+      })
+      .catch((e) => setMessage(e.response.data));
+  };
   return (
     <div className="container">
+      {message && <div className="alert alert-danger">{message}</div>}
       <div
         style={{
           height: "50px",
@@ -17,15 +51,13 @@ const SignupComponent = () => {
       <div className="mb-4 text-center">
         <h3 className="fw-bold mb-3">建立你的帳號</h3>
       </div>
-      <form
+      <div
         className="needs-validation"
         style={{ width: "356px", margin: "0 auto" }}
-        action="/signup"
-        method="POST"
-        noValidate
       >
         <div className="form-floating mb-3">
           <input
+            onChange={handleChangeAccount}
             type="text"
             className="form-control border-3 border-top-0 border-start-0 border-end-0"
             id="account"
@@ -40,6 +72,7 @@ const SignupComponent = () => {
         </div>
         <div className="form-floating mb-3">
           <input
+            onChange={handleChangeName}
             type="text"
             id="name"
             name="name"
@@ -54,6 +87,7 @@ const SignupComponent = () => {
         </div>
         <div className="form-floating mb-3">
           <input
+            onChange={handleChangeEmail}
             type="email"
             id="email"
             name="email"
@@ -67,6 +101,7 @@ const SignupComponent = () => {
         </div>
         <div className="form-floating mb-3">
           <input
+            onChange={handleChangePassword}
             type="password"
             id="password"
             name="password"
@@ -80,6 +115,7 @@ const SignupComponent = () => {
         </div>
         <div className="form-floating mb-4">
           <input
+            onChange={handleChangeCheckPassword}
             type="password"
             id="checkPassword"
             name="checkPassword"
@@ -94,12 +130,12 @@ const SignupComponent = () => {
         <div className="d-grid mb-3">
           <button
             className="btn pt-1 pb-1 ps-3 pe-3"
-            type="submit"
             style={{
               backgroundColor: "#FF6600",
               color: "white",
               borderRadius: "30px",
             }}
+            onClick={handleSignup}
           >
             註冊
           </button>
@@ -109,7 +145,7 @@ const SignupComponent = () => {
             <a href="/login">取消</a>
           </p>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 const { User, Tweet, Like, Reply } = require('../models')
-const helpers = require('../helpers/auth-helpers')
+const helpers = require('../helpers/auth-helper')
 
 const tweetController = {
   getTweets: (req, res, next) => {
